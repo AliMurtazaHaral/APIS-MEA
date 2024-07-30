@@ -50,7 +50,7 @@ module.exports = {
             },
           },
         ],
-        user_id: { [Op.ne]: req.user_id },
+        //user_id: { [Op.ne]: req.user_id },
       };
       if (req.body.category_id && JSON.parse(req.body.category_id).length > 0) {
         where_obj.category_id = { [Op.in]: JSON.parse(req.body.category_id) };
@@ -226,8 +226,7 @@ module.exports = {
               extra
             );
           }
-          console.log("Notification sent to provider");
-          
+          console.log("Notification sent to provider"); 
         }
 
         return 2;

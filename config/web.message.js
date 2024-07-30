@@ -12,6 +12,7 @@ const appMessage = {
   //USER MESSAGES
   SIGNUPSUCCESS: "Check your inbox to verify your email",
   USERALREADYEXIST: "User already exist",
+  USERDELETED: "User deleted, cannot create account on this email",
   ALREADYVERIFY: "Account is already verified",
   VERIFIED: "Your email has been verified successfully",
   PLANPURCHASED: "Plan purchased",

@@ -189,7 +189,7 @@ module.exports = {
         "<=",
         5000000
       ),
-      user_id: { [Op.ne]: req.user_id },
+      //user_id: { [Op.ne]: req.user_id },
       is_deleted: false,
       is_stop_selling: false,
       start_date: {
@@ -790,7 +790,7 @@ module.exports = {
         ticket: ticket,
         event_id: event_id,
         commission: commission,
-        payment_status: parseInt(is_free) ? "succeeded" : null,
+        payment_status: is_free ==  "true" ? "succeeded" : null,
       };
 
       let find_event_avaibility = await EventTicket.findOne({
@@ -811,6 +811,7 @@ module.exports = {
                 cart_id: req.body.cart_id,
               },
             });
+            console.log("Cart destroyed");
           }
           var find_sender = await User.findOne({
             where: {
@@ -830,7 +831,7 @@ module.exports = {
             attributes: ["event_id", "name"],
           });
 
-          if (parseInt(is_free)) {
+          if (is_free == "true") {
             let find_ticket = await EventTicket.findOne({
               where: {
                 event_ticket_id: event_ticket_id,
@@ -886,7 +887,7 @@ module.exports = {
                 await Fcm.sendNotifications(
                   `${ticket == 1 ? "Ticket" : "Tickets"} purchased`,
                   `${find_sender.full_name} purchased ${ticket} ${find_event_avaibility.type
-                  } free ${ticket == 1 ? "Ticket" : "Tickets"} for your event ${find_event.name
+                  } ${ticket == 1 ? "Ticket" : "Tickets"} for your event ${find_event.name
                   }`,
                   "1",
                   tokens,

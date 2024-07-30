@@ -32,7 +32,7 @@ module.exports = {
   /* signup */
 
   async signup(req, res) {
-    let find_user = await User.count({
+    let find_user = await User.findOne({
       where: {
         [Op.or]: [
           {
@@ -44,7 +44,13 @@ module.exports = {
     });
 
     if (find_user) {
-      return 1;
+      console.log('The deleted value is:')
+      console.log(find_user.is_deleted)
+      if (find_user.is_deleted) {
+          return 2;
+      } else {
+          return 1;
+      }
     } else {
       console.log("req.body", req.body);
       let signupObj = {
@@ -55,8 +61,10 @@ module.exports = {
         phone_number: req.body.phone_number,
         profile_image: req.body.profile_image,
         type: req.body.type,
-        latitude: req.body.latitude,
-        longitude: req.body.longitude,
+        // latitude: req.body.latitude,
+        // longitude: req.body.longitude,
+        latitude: "7.9349",
+        longitude: "8.3027",
         approval_status: "approved",
         verification_token: randomStringHelper.generateRandomString(5),
       };

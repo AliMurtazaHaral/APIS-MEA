@@ -102,52 +102,83 @@ module.exports = {
 
   //update service
 
+  // async updateRequest(req, res) {
+  //   try {
+  //     let request_update = await service_service.updateRequest(req, res);
+  //     if (request_update === 1) {
+  //       res.status(status.SUCCESS_STATUS).send({
+  //         data: [],
+  //         message: message.SUCCESS,
+  //         status: status.SUCCESS,
+  //       });
+  //     } else if (request_update === 2) {
+  //       res.status(status.SUCCESS_STATUS).send({
+  //         data: [],
+  //         message: message.NOT_FOUND,
+  //         status: status.ERROR,
+  //       });
+  //     } else if (request_update === 3) {
+  //       res.status(status.SUCCESS_STATUS).send({
+  //         data: [],
+  //         message: message.SUCCESS,
+  //         status: status.SUCCESS,
+  //       });
+  //     } else if (request_update.decline_code) {
+  //       res.status(status.SUCCESS_STATUS).send({
+  //         data: [],
+  //         message: request_update.raw.message,
+  //         status: status.ERROR,
+  //       });
+  //     } else {
+  //       res.status(status.SUCCESS_STATUS).send({
+  //         data: [],
+  //         message: message.STRIPEERROR,
+  //         status: status.ERROR,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log("🚀 ~ file: service.controller.js ~ line 140 ~ updateRequest ~ error", error)
+
+  //     res.status(status.INTERNAL_SERVER_ERROR_STATUS).send({
+  //       data: [],
+  //       error: error,
+  //       message: message.INTERNALSERVERERROR,
+  //       status: status.ERROR,
+  //     });
+  //   }
+  // },
+
   async updateRequest(req, res) {
-    try {
-      let request_update = await service_service.updateRequest(req, res);
-      if (request_update === 1) {
-        res.status(status.SUCCESS_STATUS).send({
+      try {
+        let request_update = await service_service.updateRequest(req, res);
+        if (request_update) {
+          res.status(status.SUCCESS_STATUS).send({
+            data: {},
+            message: message.SUCCESS,
+            status: status.SUCCESS,
+          });
+        } else {
+          res.status(status.SUCCESS_STATUS).send({
+            data: [],
+            message: message.NOT_FOUND,
+            status: status.ERROR,
+          });
+        }
+      } catch (error) {
+        console.log(
+          "🚀 ~ file: service.controller.js ~ line 196 ~ bookingList ~ error",
+          error
+        );
+  
+        res.status(status.INTERNAL_SERVER_ERROR_STATUS).send({
           data: [],
-          message: message.SUCCESS,
-          status: status.SUCCESS,
-        });
-      } else if (request_update === 2) {
-        res.status(status.SUCCESS_STATUS).send({
-          data: [],
-          message: message.NOT_FOUND,
-          status: status.ERROR,
-        });
-      } else if (request_update === 3) {
-        res.status(status.SUCCESS_STATUS).send({
-          data: [],
-          message: message.SUCCESS,
-          status: status.SUCCESS,
-        });
-      } else if (request_update.decline_code) {
-        res.status(status.SUCCESS_STATUS).send({
-          data: [],
-          message: request_update.raw.message,
-          status: status.ERROR,
-        });
-      } else {
-        res.status(status.SUCCESS_STATUS).send({
-          data: [],
-          message: message.STRIPEERROR,
+          error: error,
+          message: message.INTERNALSERVERERROR,
           status: status.ERROR,
         });
       }
-    } catch (error) {
-      console.log("🚀 ~ file: service.controller.js ~ line 140 ~ updateRequest ~ error", error)
-
-      res.status(status.INTERNAL_SERVER_ERROR_STATUS).send({
-        data: [],
-        error: error,
-        message: message.INTERNALSERVERERROR,
-        status: status.ERROR,
-      });
-    }
-  },
-
+    },
+  
   async listRequest(req, res) {
     try {
       let list_request = await service_service.listRequest(req, res);

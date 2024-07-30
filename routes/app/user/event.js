@@ -13,7 +13,9 @@ const imageMiddleware = require("../../../middleware/multer");
 //--for sell event---
 router.post("/add",user_auth, imageMiddleware.multiProfilePic ,event_controller.add);
 router.post("/list",user_auth, event_controller.list);
-router.get("/view/:id",user_auth, event_controller.viewById);//:id of perticular event
+router.post("/guest_list", event_controller.list);
+//router.get("/view/:id",user_auth, event_controller.viewById);//:id of perticular event
+router.get("/view/:id", event_controller.viewById);//:id of perticular event
 router.put("/update/:id",user_auth, event_controller.update); //:id of perticular event
 router.put("/stop_sell/:id",user_auth, event_controller.stopSelling); //:id of perticular event
 router.get("/check_ticket_sold/:id",user_auth, event_controller.checkTicketSold);

@@ -12,6 +12,7 @@ const Event = require("../../../database/models").tbl_event;
 const ServiceBooking = require("../../../database/models").tbl_service_booking;
 const RecentWorkMedia = require("../../../database/models").tbl_recent_work;
 const Review = require("../../../database/models").tbl_review;
+const Cart = require("../../../database/models").tbl_cart;
 const UserToken = require("../../../database/models").tbl_user_token;
 
 const FcmService = require("../../../helper/fcm");
@@ -309,233 +310,274 @@ module.exports = {
 
   //update request
 
+  // async updateRequest(req, res) {
+
+  //   await ServiceBooking.update(
+  //     { card_id: req.body.card_id }, // Assuming newCardId is the card id you want to update
+  //     { where: { booking_id: req.params.id } }
+  //   );
+  //   console.log("Booking updated")
+
+  //   let find_booking = await ServiceBooking.findOne({
+  //     where: {
+  //       booking_id: req.params.id,
+  //     },
+  //   });
+  //   console.log("Booking found")
+
+  //   var find_sender = await User.findOne({
+  //     where: {
+  //       user_id: find_booking.provider_id,
+  //     },
+  //   });
+  //   console.log("User found")
+    
+  //   var find_receiver = await User.findOne({
+  //     where: {
+  //       user_id: find_booking.customer_id,
+  //       is_notification_on: true,
+  //     },
+  //   });
+  //   console.log("User Notification found")
+    
+  //   var find_service = await Service.findOne({
+  //     where: {
+  //       service_id: find_booking.service_id,
+  //     },
+  //     attributes: ["service_id", "name"],
+  //   });
+  //   console.log("Service found")
+    
+  //   var find_event;
+  //   if (find_booking.event_id) {
+  //     find_event = await Event.findOne({
+  //       where: {
+  //         event_id: find_booking.event_id,
+  //       },
+  //       attributes: ["event_id", "name"],
+  //     });
+  //   }
+  //   console.log("Event Not found")
+    
+
+
+  //   if (req.body.response === "accept") {
+  //     if (find_booking) {
+  //       try {
+  //         let create_charge = await Stripe.createCharge(
+  //           find_booking.total_amount.toFixed(2) * 100,
+  //           find_booking.stripe_customer_id,
+  //           find_booking.card_id,
+  //           find_booking.order_id,
+  //           find_booking.provider_amount.toFixed(2) * 100,
+  //           find_booking.provider_account_id
+  //         );
+
+  //         if (create_charge) {
+  //           await ServiceBooking.update(
+  //             {
+  //               receipt: create_charge.receipt_url,
+  //               transaction_id: create_charge.id,
+  //               transfer_id: create_charge.transfer,
+  //               payment_status: create_charge.status,
+  //               request_status: "accepted",
+  //             },
+  //             {
+  //               where: {
+  //                 booking_id: req.params.id,
+  //               },
+  //             }
+  //           );
+  //           if (find_receiver) {
+  //             var find_tokens = await UserToken.findAll({
+  //               where: {
+  //                 user_id: find_receiver.user_id,
+  //                 device_token: { [Op.ne]: null },
+  //                 device_type: { [Op.ne]: null },
+  //               },
+  //             });
+
+  //             var tokens = [];
+  //             var extra = {
+  //               type: "service_response",
+  //               id: find_booking.booking_id,
+  //             };
+  //             find_tokens.forEach((data) => {
+  //               if (data.device_token !== "") {
+  //                 tokens.push(data.device_token);
+  //               }
+  //             });
+  //             console.log("tokens", tokens)
+
+  //             await Fcm.createNotification(
+  //               `Service accepted`,
+  //               `${find_sender.full_name} accepted for your service request for ${find_service.name}`,
+  //               3,
+  //               find_sender.user_id,
+  //               find_receiver.user_id,
+  //               null,
+  //               null,
+  //               find_service.service_id,
+  //               extra
+  //             );
+  //             if (tokens.length) {
+  //               console.log('we are in  1')
+  //               await Fcm.sendNotifications(
+  //                 `Service accepted`,
+  //                 `${find_sender.full_name} accepted for your service request for ${find_service.name}`,
+  //                 "3",
+  //                 tokens,
+  //                 extra
+  //               );
+  //             }
+  //           }
+  //           return 1;
+  //         }
+  //       } catch (errors) {
+  //         await ServiceBooking.update(
+  //           {
+  //             transaction_id: errors.charge,
+  //             payment_status: "failed",
+  //             request_status: "rejected",
+  //           },
+  //           {
+  //             where: {
+  //               booking_id: req.params.id,
+  //             },
+  //           }
+  //         );
+  //         if (find_receiver) {
+  //           var find_tokens = await UserToken.findAll({
+  //             where: {
+  //               user_id: find_receiver.user_id,
+  //               device_token: { [Op.ne]: null },
+  //               device_type: { [Op.ne]: null },
+  //             },
+  //           });
+
+  //           var tokens = [];
+  //           var extra = {
+  //             type: "service_booking",
+  //             id: find_booking.booking_id,
+  //           };
+  //           find_tokens.forEach((data) => {
+  //             if (data.device_token !== "") {
+  //               tokens.push(data.device_token);
+  //             }
+  //           });
+
+  //           await Fcm.createNotification(
+  //             `Service rejected`,
+  //             `${find_service.name} service request rejected due to payment issue`,
+  //             4,
+  //             find_sender.user_id,
+  //             find_receiver.user_id,
+  //             null,
+  //             null,
+  //             find_service.service_id,
+  //             extra
+  //           );
+  //           if (tokens.length) {
+  //             console.log('we are in  2')
+  //             await Fcm.sendNotifications(
+  //               `Service rejected`,
+  //               `${find_service.name} service request rejected due to payment issue`,
+  //               "4",
+  //               tokens,
+  //               extra
+  //             );
+  //           }
+  //         }
+  //         console.log("hi");
+  //         return errors;
+  //       }
+  //     } else {
+  //       return 2;
+  //     }
+  //   } else if (req.body.response === "reject") {
+  //     let update_status = await ServiceBooking.update(
+  //       {
+  //         request_status: "rejected",
+  //       },
+  //       {
+  //         where: {
+  //           booking_id: req.params.id,
+  //         },
+  //       }
+  //     );
+  //     if (find_receiver) {
+  //       console.log("rec");
+  //       var find_tokens = await UserToken.findAll({
+  //         where: {
+  //           user_id: find_receiver.user_id,
+  //           device_token: { [Op.ne]: null },
+  //           device_type: { [Op.ne]: null },
+  //         },
+  //       });
+
+  //       var tokens = [];
+  //       var extra = {
+  //         type: "service_booking",
+  //         id: find_booking.booking_id,
+  //       };
+  //       find_tokens.forEach((data) => {
+  //         if (data.device_token !== "") {
+  //           tokens.push(data.device_token);
+  //         }
+  //       });
+
+  //       await Fcm.createNotification(
+  //         `Service rejected`,
+  //         `${find_sender.full_name} rejected your ${find_service.name} service request`,
+  //         5,
+  //         find_sender.user_id,
+  //         find_receiver.user_id,
+  //         null,
+  //         null,
+  //         find_service.service_id,
+  //         extra
+  //       );
+  //       if (tokens.length) {
+  //         console.log('we are in 3')
+  //         await Fcm.sendNotifications(
+  //           `Service rejected`,
+  //           `${find_sender.full_name} rejected your ${find_service.name} service request`,
+  //           "5",
+  //           tokens,
+  //           extra
+  //         );
+  //       }
+  //     }
+  //     if (update_status) {
+  //       return 1;
+  //     } else {
+  //       return 2;
+  //     }
+  //   }
+  // },
+
   async updateRequest(req, res) {
-    let find_booking = await ServiceBooking.findOne({
-      where: {
-        booking_id: req.params.id,
+    console.log("hi");
+    let { payment_status, cart_id } = req.body;
+    
+    let update_status = ServiceBooking.update(
+      {
+        payment_status: payment_status,
       },
-    });
-    var find_sender = await User.findOne({
-      where: {
-        user_id: find_booking.provider_id,
-      },
-    });
-    var find_receiver = await User.findOne({
-      where: {
-        user_id: find_booking.customer_id,
-        is_notification_on: true,
-      },
-    });
-    var find_service = await Service.findOne({
-      where: {
-        service_id: find_booking.service_id,
-      },
-      attributes: ["service_id", "name"],
-    });
-    var find_event;
-    if (find_booking.event_id) {
-      find_event = await Event.findOne({
+      {
         where: {
-          event_id: find_booking.event_id,
+          booking_id: req.params.id,
         },
-        attributes: ["event_id", "name"],
+      }
+    );
+    if (cart_id) {
+      await Cart.destroy({
+        where: {
+          cart_id: req.body.cart_id,
+        },
       });
     }
-
-
-    if (req.body.response === "accept") {
-      if (find_booking) {
-        try {
-          let create_charge = await Stripe.createCharge(
-            find_booking.total_amount.toFixed(2) * 100,
-            find_booking.stripe_customer_id,
-            find_booking.card_id,
-            find_booking.order_id,
-            find_booking.provider_amount.toFixed(2) * 100,
-            find_booking.provider_account_id
-          );
-
-          if (create_charge) {
-            await ServiceBooking.update(
-              {
-                receipt: create_charge.receipt_url,
-                transaction_id: create_charge.id,
-                transfer_id: create_charge.transfer,
-                payment_status: create_charge.status,
-                request_status: "accepted",
-              },
-              {
-                where: {
-                  booking_id: req.params.id,
-                },
-              }
-            );
-            if (find_receiver) {
-              var find_tokens = await UserToken.findAll({
-                where: {
-                  user_id: find_receiver.user_id,
-                  device_token: { [Op.ne]: null },
-                  device_type: { [Op.ne]: null },
-                },
-              });
-
-              var tokens = [];
-              var extra = {
-                type: "service_response",
-                id: find_booking.booking_id,
-              };
-              find_tokens.forEach((data) => {
-                if (data.device_token !== "") {
-                  tokens.push(data.device_token);
-                }
-              });
-              console.log("tokens", tokens)
-
-              await Fcm.createNotification(
-                `Service accepted`,
-                `${find_sender.full_name} accepted for your service request for ${find_service.name}`,
-                3,
-                find_sender.user_id,
-                find_receiver.user_id,
-                null,
-                null,
-                find_service.service_id,
-                extra
-              );
-              if (tokens.length) {
-                console.log('we are in  1')
-                await Fcm.sendNotifications(
-                  `Service accepted`,
-                  `${find_sender.full_name} accepted for your service request for ${find_service.name}`,
-                  "3",
-                  tokens,
-                  extra
-                );
-              }
-            }
-            return 1;
-          }
-        } catch (errors) {
-          await ServiceBooking.update(
-            {
-              transaction_id: errors.charge,
-              payment_status: "failed",
-              request_status: "rejected",
-            },
-            {
-              where: {
-                booking_id: req.params.id,
-              },
-            }
-          );
-          if (find_receiver) {
-            var find_tokens = await UserToken.findAll({
-              where: {
-                user_id: find_receiver.user_id,
-                device_token: { [Op.ne]: null },
-                device_type: { [Op.ne]: null },
-              },
-            });
-
-            var tokens = [];
-            var extra = {
-              type: "service_booking",
-              id: find_booking.booking_id,
-            };
-            find_tokens.forEach((data) => {
-              if (data.device_token !== "") {
-                tokens.push(data.device_token);
-              }
-            });
-
-            await Fcm.createNotification(
-              `Service rejected`,
-              `${find_service.name} service request rejected due to payment issue`,
-              4,
-              find_sender.user_id,
-              find_receiver.user_id,
-              null,
-              null,
-              find_service.service_id,
-              extra
-            );
-            if (tokens.length) {
-              console.log('we are in  2')
-              await Fcm.sendNotifications(
-                `Service rejected`,
-                `${find_service.name} service request rejected due to payment issue`,
-                "4",
-                tokens,
-                extra
-              );
-            }
-          }
-          console.log("hi");
-          return errors;
-        }
-      } else {
-        return 2;
-      }
-    } else if (req.body.response === "reject") {
-      let update_status = await ServiceBooking.update(
-        {
-          request_status: "rejected",
-        },
-        {
-          where: {
-            booking_id: req.params.id,
-          },
-        }
-      );
-      if (find_receiver) {
-        console.log("rec");
-        var find_tokens = await UserToken.findAll({
-          where: {
-            user_id: find_receiver.user_id,
-            device_token: { [Op.ne]: null },
-            device_type: { [Op.ne]: null },
-          },
-        });
-
-        var tokens = [];
-        var extra = {
-          type: "service_booking",
-          id: find_booking.booking_id,
-        };
-        find_tokens.forEach((data) => {
-          if (data.device_token !== "") {
-            tokens.push(data.device_token);
-          }
-        });
-
-        await Fcm.createNotification(
-          `Service rejected`,
-          `${find_sender.full_name} rejected your ${find_service.name} service request`,
-          5,
-          find_sender.user_id,
-          find_receiver.user_id,
-          null,
-          null,
-          find_service.service_id,
-          extra
-        );
-        if (tokens.length) {
-          console.log('we are in 3')
-          await Fcm.sendNotifications(
-            `Service rejected`,
-            `${find_sender.full_name} rejected your ${find_service.name} service request`,
-            "5",
-            tokens,
-            extra
-          );
-        }
-      }
-      if (update_status) {
-        return 1;
-      } else {
-        return 2;
-      }
-    }
+    return update_status;
   },
 
   //list request
@@ -762,6 +804,16 @@ module.exports = {
           } else {
             result.service.user.profile_image = null;
           }
+
+          if (result.service.image) {
+            result.service.image =
+              constant.AWS_S3_URL +
+              constant.AWS_S3_PROJECT_FOLDER +
+              constant.AWS_SERVICE_FOLDER +
+              result.service.image;
+          } else {
+            result.service.image = null;
+          }
         });
 
         let find_past_booking = await ServiceBooking.findAndCountAll({
@@ -793,6 +845,7 @@ module.exports = {
               ],
             },
           ],
+
           order: [["createdAt", "DESC"]],
           offset: offset,
           limit: limit,
@@ -808,6 +861,15 @@ module.exports = {
               result.service.user.profile_image;
           } else {
             result.service.user.profile_image = null;
+          }
+          if (result.service.image) {
+            result.service.image =
+              constant.AWS_S3_URL +
+              constant.AWS_S3_PROJECT_FOLDER +
+              constant.AWS_SERVICE_FOLDER +
+              result.service.image;
+          } else {
+            result.service.image = null;
           }
         });
 
@@ -852,6 +914,15 @@ module.exports = {
               result.service.user.profile_image;
           } else {
             result.service.user.profile_image = null;
+          }
+          if (result.service.image) {
+              result.service.image =
+                constant.AWS_S3_URL +
+                constant.AWS_S3_PROJECT_FOLDER +
+                constant.AWS_SERVICE_FOLDER +
+                result.service.image;
+          } else {
+              result.service.image = null;
           }
         });
 
@@ -943,6 +1014,16 @@ module.exports = {
           } else {
             result.service.user.profile_image = null;
           }
+
+          if (result.service.image) {
+            result.service.image =
+              constant.AWS_S3_URL +
+              constant.AWS_S3_PROJECT_FOLDER +
+              constant.AWS_SERVICE_FOLDER +
+              result.service.image;
+          } else {
+            result.service.image = null;
+          }
         });
 
         return find_service_booking;
@@ -953,13 +1034,38 @@ module.exports = {
   },
 
   //update booking status
+  // async changeBookingStatus(req, res) {
+  //   console.log("hi");
+  //   let { status } = req.body;
+
+  //   let update_status = ServiceBooking.update(
+  //     {
+  //       service_status: status,
+  //     },
+  //     {
+  //       where: {
+  //         booking_id: req.params.id,
+  //       },
+  //     }
+  //   );
+  //   return update_status;
+  // },
+
   async changeBookingStatus(req, res) {
     console.log("hi");
-    let { status } = req.body;
+    let { status, cart_id } = req.body;
 
+    if (cart_id) {
+      await Cart.destroy({
+        where: {
+          cart_id: req.body.cart_id,
+        },
+      });
+    }
+    
     let update_status = ServiceBooking.update(
       {
-        service_status: status,
+        request_status: status,
       },
       {
         where: {

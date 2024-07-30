@@ -22,6 +22,12 @@ module.exports = {
           message: message.USERALREADYEXIST,
           status: status.ERROR,
         });
+      } else if (user === 2) {
+        res.status(status.SUCCESS_STATUS).send({
+          data: {},
+          message: message.USERDELETED,
+          status: status.ERROR,
+        });
       } else {
         res.status(status.SUCCESS_STATUS).send({
           data: {},
@@ -646,31 +652,31 @@ module.exports = {
     try {
       const deleteUser = await common_service.deleteUserAccountAndDetails(req, res);
       if (deleteUser === 1) {
-        return res.status(400).send({
+        return res.status((status.SUCCESS_STATUS)).send({
           message: "Missing email or password.",
           data: {},
           status: status.ERROR
         })
       } else if (deleteUser === 2) {
-        return res.status(400).send({
+        return res.status((status.SUCCESS_STATUS)).send({
           message: "User not found.",
           data: {},
           status: status.ERROR
         })
       } else if (deleteUser === 3) {
-        return res.status(400).send({
+        return res.status((status.SUCCESS_STATUS)).send({
           message: "Credentials does'nt match.",
           data: {},
           status: status.ERROR
         })
       } else if (deleteUser === 5) {
-        return res.status(400).send({
+        return res.status((status.SUCCESS_STATUS)).send({
           message: "Unable to delete the user, Try again!",
           data: {},
           status: status.ERROR
         })
       } else {
-        return res.status(200).send({
+        return res.status((status.SUCCESS_STATUS)).send({
           message: "User deleted successfully",
           data: {},
           status: status.SUCCESS

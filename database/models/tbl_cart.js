@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
         as: "event",
         onDelete: "CASCADE",
       });
+      tbl_cart.belongsTo(models.tbl_service_booking, {
+        foreignKey: "service_booking_id",
+        as: "booking_details",
+        onDelete: "CASCADE",
+      });
     }
   }
   tbl_cart.init(
@@ -36,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       event_ticket_id: DataTypes.INTEGER,
       service_id: DataTypes.INTEGER,
+      service_booking_id: DataTypes.INTEGER,
       user_id: DataTypes.INTEGER,
       start_date: DataTypes.DATEONLY,
       start_time: DataTypes.TIME,

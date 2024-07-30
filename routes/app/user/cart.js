@@ -10,5 +10,4 @@ router.post("/list",user_auth, cart_controller.list);
 router.delete("/delete/:id",user_auth, cart_controller.delete);
 
 
-
 module.exports = router;
